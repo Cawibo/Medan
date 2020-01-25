@@ -1,4 +1,4 @@
-use crate::syntax::{lexer::*, parser::*};
+use super::syntax::{parser::*, tokenizer::*};
 
 pub struct Parser {
     tokens: Vec<Token>,
@@ -46,10 +46,7 @@ impl Parser {
             ref other => panic!("Unreachable token kind: {:?}", other),
         };
 
-        Ok(Expr {
-            kind: lit_kind,
-            position: next.position,
-        })
+        Ok(Expr { kind: lit_kind })
     }
 
     pub fn parse_expr(&mut self) -> Result<Expr, ErrorKind> {
@@ -61,15 +58,13 @@ impl Parser {
                 let expr = self.parse_expr()?;
                 self.eat(); // rparen
                 return Ok(Expr {
-                    position: expr.position,
                     kind: ExprKind::Precedence(Box::new(expr)),
                 });
             }
-            Some(Bang) => {
+            Some(Not) => {
                 self.eat();
                 let expr = self.parse_expr()?;
                 return Ok(Expr {
-                    position: expr.position,
                     kind: ExprKind::Negation(Box::new(expr)),
                 });
             }
@@ -81,13 +76,13 @@ impl Parser {
         let left = self.parse_literal().expect("unreachable");
 
         match self.peek() {
-            Some(Plus) | Some(Minus) | Some(Times) | Some(Division) | Some(Equals) | Some(LEq)
+            Some(Plus) | Some(Minus) | Some(Times) | Some(Slash) | Some(Equals) | Some(LEq)
             | Some(And) => (),
             None | Some(_) => return Ok(left),
         };
 
-        let (op_kind, op_pos) = if let Some(op) = self.next() {
-            (op.kind.clone(), op.position)
+        let op_kind = if let Some(op) = self.next() {
+            op.kind.clone()
         } else {
             unreachable!();
         };
@@ -105,7 +100,6 @@ impl Parser {
                 LEq => ExprKind::LessThanOrEquals(Box::new(left), Box::new(right)),
                 _ => panic!("what"),
             },
-            position: op_pos,
         })
     }
 

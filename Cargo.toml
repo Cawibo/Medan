@@ -1,5 +1,5 @@
 [package]
-name = "testing"
+name = "using-medan"
 version = "0.1.0"
 authors = ["Caroline <cawibo@gmail.com>"]
 edition = "2018"

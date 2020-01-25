@@ -1,5 +1,43 @@
+pub mod tokenizer {
+    #[derive(Debug)]
+    pub struct Token {
+        pub kind: TokenKind,
+    }
+
+    #[derive(Debug)]
+    pub enum TokenizerError {
+        UnexpectedEOF,
+        UnexpectedMeta(String),
+    }
+
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum TokenKind {
+        LParen,
+        RParen,
+        Plus,
+        Minus,
+        Times,
+        Slash,
+        Assign,
+        Equals,
+        Skip,
+        LEq,
+        While,
+        Then,
+        Else,
+        Do,
+        If,
+        And,
+        Semicolon,
+        Not,
+        Whitespace,
+        Identifier(String),
+        IntLit(usize),
+        BoolLit(bool),
+    }
+}
+
 pub mod parser {
-    use super::lexer::*;
     use std::fmt;
 
     #[derive(Debug)]
@@ -46,7 +84,6 @@ pub mod parser {
 
     pub struct Expr {
         pub kind: ExprKind,
-        pub position: Position,
     }
 
     impl fmt::Debug for Expr {
@@ -66,7 +103,7 @@ pub mod parser {
                     write!(f, "LessThanOrEquals( {:?}, {:?} )", left, right)
                 }
                 Conjunction(left, right) => write!(f, "Conjunction( {:?}, {:?} )", left, right),
-                Precedence(expr) => write!(f, "{:?}", expr),
+                Precedence(expr) => write!(f, "( {:?} )", expr),
             }
         }
     }
@@ -75,58 +112,5 @@ pub mod parser {
     pub enum ErrorKind {
         UnexpectedEOF,
         UnexpectedToken,
-    }
-}
-
-pub mod lexer {
-    #[derive(Clone, Debug, PartialEq, Eq)]
-    pub enum TokenKind {
-        LParen,
-        RParen,
-        Plus,
-        Minus,
-        Times,
-        Division,
-        Assign,
-        Equals,
-        Skip,
-        LEq,
-        While,
-        Then,
-        Else,
-        Do,
-        If,
-        And,
-        Semicolon,
-        Bang,
-        Whitespace,
-        Identifier(String),
-        IntLit(usize),
-        BoolLit(bool),
-    }
-
-    #[derive(Clone, Copy)]
-    pub struct Position {
-        pub line: usize,
-        pub offset: usize,
-    }
-
-    pub struct Token {
-        pub kind: TokenKind,
-        pub position: Position,
-    }
-
-    use std::fmt;
-
-    impl fmt::Debug for Token {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            write!(f, "{:?}", self.kind)
-        }
-    }
-
-    impl fmt::Debug for Position {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            write!(f, "({}:{})", self.line, self.offset)
-        }
     }
 }
