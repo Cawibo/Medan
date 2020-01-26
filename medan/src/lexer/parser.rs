@@ -94,7 +94,7 @@ impl Parser {
                 Plus => ExprKind::Add(Box::new(left), Box::new(right)),
                 Minus => ExprKind::Sub(Box::new(left), Box::new(right)),
                 Times => ExprKind::Mult(Box::new(left), Box::new(right)),
-                Division => ExprKind::Div(Box::new(left), Box::new(right)),
+                Slash => ExprKind::Div(Box::new(left), Box::new(right)),
                 And => ExprKind::Conjunction(Box::new(left), Box::new(right)),
                 Equals => ExprKind::Equals(Box::new(left), Box::new(right)),
                 LEq => ExprKind::LessThanOrEquals(Box::new(left), Box::new(right)),
